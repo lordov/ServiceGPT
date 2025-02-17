@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from sqlalchemy import ForeignKey, String, Integer, DateTime, func
 from app.models.base import Base
+from app.schemas.chat import ChatOut
 
 
 class Chat(Base):
@@ -13,6 +14,13 @@ class Chat(Base):
         ForeignKey("users.id"), nullable=False)
 
     messages = relationship("Message", back_populates="chat")
+
+    def to_read_model(self) -> ChatOut:
+        return ChatOut(
+            chat_id=self.id,
+            owner_id=self.owner_id,
+            title=self.title,
+        )
 
 
 class Message(Base):
