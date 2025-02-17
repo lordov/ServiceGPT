@@ -17,6 +17,7 @@ async def get_db():
     async with async_session_maker() as session:
         yield session
 
+
 async def get_user(email: str, session: AsyncSession):
     query = select(User).where(User.email == email)
     result = await session.execute(query)
