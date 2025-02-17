@@ -9,7 +9,7 @@ from passlib.context import CryptContext
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
-async def get_user_by_email(session: AsyncSession, email: str):
+async def get_user_by_email(session: AsyncSession, email: str) -> User | None:
     result = await session.execute(select(User).filter(User.email == email))
     return result.scalars().first()
 

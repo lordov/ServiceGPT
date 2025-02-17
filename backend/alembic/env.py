@@ -2,8 +2,8 @@ from logging.config import fileConfig
 
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
-from backend.app.models.base import Base
-from backend.app.config import DATABASE_URL
+from app.models.base import Base
+from app.config import DATABASE_URL
 
 
 from alembic import context

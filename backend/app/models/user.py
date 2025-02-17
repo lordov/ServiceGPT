@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Mapped, mapped_column
 from sqlalchemy import Boolean, String
 from app.models.base import Base
+from app.schemas.user import UserOut
 
 
 class User(Base):
@@ -13,3 +14,12 @@ class User(Base):
     fullname: Mapped[str] = mapped_column(String(255), nullable=True)
     role: Mapped[str] = mapped_column(String(50), default="user")
     is_active: Mapped[bool] = mapped_column(Boolean, default=True)
+
+    def to_read_model(self) -> UserOut:
+        return UserOut(
+            id=self.id,
+            email=self.email,
+            fullname=self.fullname,
+            role=self.role,
+            is_active=self.is_active,
+        )
