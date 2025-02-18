@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Mapped, mapped_column, relationship
-from sqlalchemy import ForeignKey, String, Integer, DateTime, func
+from sqlalchemy import ForeignKey, String, Integer, Text
 from app.models.base import Base
 from app.schemas.chat import ChatOut
 
@@ -31,8 +31,9 @@ class Message(Base):
     chat_id: Mapped[int] = mapped_column(
         ForeignKey("chats.id"), nullable=False)
     sender_id: Mapped[int] = mapped_column(
-        ForeignKey("users.id"), nullable=False)
-    content: Mapped[str] = mapped_column(String(1000), nullable=False)
-    timestamp: Mapped[DateTime] = mapped_column(DateTime, default=func.now())
+        ForeignKey("users.id"), nullable=True)
+    content: Mapped[str] = mapped_column(Text, default=0)
+    role: Mapped[str] = mapped_column(
+        String(50), nullable=False, default='user')
 
     chat = relationship("Chat", back_populates="messages")

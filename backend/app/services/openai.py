@@ -1,16 +1,40 @@
 import openai
+
 from fastapi.exceptions import HTTPException
+from app.models.chat import Message
+
 from app.config import env
+from app.services.chat import get_messages_by_chat
 
-client = openai.OpenAI(api_key=env.str("OPENAI_API_KEY"))
 
-def generate_chatgpt_response(messages: list[str], model: str = "gpt-3.5-turbo") -> str:
+client = openai.OpenAI(
+    api_key=env.str("OPENAI_API_KEY"),
+    base_url="https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+    )
+
+async def generate_chatgpt_response(
+        first_message: str | None = None,
+        chat_messages: list[Message] | None = None,
+        model: str = "qwen-plus"
+        ) -> str:
     try:
+        if chat_messages is None:
+            messages = [
+                {"role": "user", "content": first_message[0]}
+                ]
+        else:
+            # Формируем историю для OpenAI API
+            messages = [
+                {"role": message.role, "content": message.content}
+                for message in chat_messages
+            ]
+        
+        # Отправляем историю в OpenAI API
         response = client.chat.completions.create(
             model=model,
-            messages=[{"role": "user", "content": message}
-                      for message in messages]
+            messages=messages
         )
+
         return response.choices[0].message.content
     except openai.RateLimitError as e:
         raise HTTPException(

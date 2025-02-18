@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
+from typing import Union
 
 
 class ChatBase(BaseModel):
@@ -23,14 +24,13 @@ class MessageBase(BaseModel):
 
 
 class MessageCreate(MessageBase):
-    chat_id: int
+    chat_id: Union[int | None] = None
 
 
 class MessageOut(MessageBase):
     id: int
     chat_id: int
     sender_id: int
-    timestamp: datetime
 
     class Config:
         from_attributes = True
