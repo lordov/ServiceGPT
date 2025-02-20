@@ -13,14 +13,14 @@ client = openai.OpenAI(
     )
 
 async def generate_chatgpt_response(
-        first_message: str | None = None,
+        message: str | None = None,
         chat_messages: list[Message] | None = None,
         model: str = "qwen-plus"
         ) -> str:
     try:
         if chat_messages is None:
             messages = [
-                {"role": "user", "content": first_message[0]}
+                {"role": "user", "content": message}
                 ]
         else:
             # Формируем историю для OpenAI API
@@ -28,6 +28,7 @@ async def generate_chatgpt_response(
                 {"role": message.role, "content": message.content}
                 for message in chat_messages
             ]
+            messages.append({"role": "user", "content": message})
         
         # Отправляем историю в OpenAI API
         response = client.chat.completions.create(

@@ -1,0 +1,31 @@
+@use "variables" as *;
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 30px;
+  background: $input-bg;
+  color: black;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+
+  .logout-container {
+    position: absolute;
+    bottom: 20px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .logout-btn {
+    background: #ff3b30;
+    color: white;
+    border: none;
+    padding: 8px 20px;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: 0.3s;
+
+    &:hover {
+      background: #d32f2f;
+    }
+  }
+}

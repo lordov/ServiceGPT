@@ -72,7 +72,8 @@ async def delete_chat(
     chat = await chat_repo.get_one(chat_id)
 
     if not chat or chat.owner_id != current_user.id:
-        logger.warning(f"User {current_user.id} tried to delete non-existing chat {chat_id}")
+        logger.warning(
+            f"User {current_user.id} tried to delete non-existing chat {chat_id}")
         raise HTTPException(status_code=404, detail="Chat not found")
 
     deleted = await chat_repo.delete_one(chat_id)
@@ -85,7 +86,7 @@ async def delete_chat(
     return {"message": "Chat deleted successfully"}
 
 
-@router.post("/chats/messages", response_model=MessageOut)
+@router.post("/messages", response_model=MessageOut)
 async def create_chat_and_send_message(
     message_data: MessageBase,
     current_user: Annotated[UserOut, Depends(get_current_user)],
@@ -93,7 +94,7 @@ async def create_chat_and_send_message(
 ):
     # Получаем ответ от нейросети
     gpt_response = await generate_chatgpt_response(
-        first_message=[message_data.content])
+        message=message_data.content)
 
     sentences = gpt_response.split('. ')
     # Извлекаем первые два предложения для названия чата
@@ -122,7 +123,7 @@ async def create_chat_and_send_message(
     return saved_bot_message
 
 
-@router.post("/chats/{chat_id}/messages", response_model=MessageOut)
+@router.post("/{chat_id}/messages", response_model=MessageOut)
 async def send_message_to_existing_chat(
     chat_id: int,
     message_data: MessageCreate,
@@ -137,7 +138,7 @@ async def send_message_to_existing_chat(
         raise HTTPException(status_code=404, detail="Чат не найден")
 
     # Отправляем в OpenAI API
-    gpt_response = await generate_chatgpt_response(chat_messages=chat_messages)
+    gpt_response = await generate_chatgpt_response(message_data.content, chat_messages=chat_messages)
 
     # Сохраняем сообщение от пользователя
     user_message = MessageCreate(chat_id=chat_id, content=message_data.content)
@@ -148,3 +149,19 @@ async def send_message_to_existing_chat(
     saved_bot_message = await create_message(db, bot_message, sender_id=0, role="assistant")
 
     return saved_bot_message
+
+
+@router.get("/{chat_id}/messages", response_model=list[MessageOut])
+async def get_chat_messages(
+    chat_id: int,
+    current_user: Annotated[UserOut, Depends(get_current_user)],
+    db: AsyncSession = Depends(get_db),
+):
+    # Проверяем, существует ли чат
+    chat = await db.get(Chat, chat_id)
+    if not chat or chat.owner_id != current_user.id:
+        raise HTTPException(status_code=404, detail="Чат не найден")
+
+    # Получаем список сообщений
+    messages = await get_messages_by_chat(db, chat_id)
+    return messages

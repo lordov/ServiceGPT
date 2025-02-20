@@ -57,3 +57,11 @@ async def get_messages_by_chat(db: AsyncSession, chat_id: int, limit: int = 20) 
             desc(Message.chat_id)).limit(limit)
     )
     return result.scalars().all()
+
+
+# async def get_messages_for_gpt(db: AsyncSession, chat_id: int, limit: int = 20) -> list[Message]:
+#     result = await db.execute(
+#         select(Message).filter(Message.chat_id == chat_id, Message.role == 'user').order_by(
+#             desc(Message.chat_id)).limit(limit)
+#     )
+#     return result.scalars().all()
