@@ -8,13 +8,7 @@ from app.api.auth import router as auth_router
 from app.api.chat import router as chat_router
 
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
-    yield  # позволяет FastAPI продолжить работу после старта
-
-app = FastAPI(lifespan=lifespan)
+app = FastAPI()
 app.include_router(auth_router)
 app.include_router(chat_router)
 # Разрешаем CORS для фронтенда

@@ -8,8 +8,8 @@ from app.services.chat import get_messages_by_chat
 
 
 client = openai.OpenAI(
-    api_key=env.str("OPENAI_API_KEY"),
-    base_url="https://dashscope-intl.aliyuncs.com/compatible-mode/v1",
+    api_key=env.str("GPT_API_KEY"),
+    base_url=env.str("GPT_URL"),
     )
 
 async def generate_chatgpt_response(
