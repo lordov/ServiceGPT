@@ -97,7 +97,6 @@ async def create_chat_and_send_message(
         message=message_data.content)
 
     sentences = gpt_response.split('. ')
-    # Извлекаем первые два предложения для названия чата
     title = sentences[0]
 
     # Создаем новый чат с названием, полученным от нейросети

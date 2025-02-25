@@ -232,6 +232,12 @@ export default function Chat() {
                             placeholder="Введите сообщение..."
                             value={input}
                             onChange={(e) => setInput(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === "Enter" && !e.shiftKey && !isLoading) {
+                                    e.preventDefault(); // Отменяем перенос строки
+                                    sendMessage();
+                                }
+                            }}
                             disbled={isLoading}
                         />
                         {/* ✅ Показываем индикатор загрузки вместо кнопки */}

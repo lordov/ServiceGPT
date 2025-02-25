@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import "../styles/login.scss";
 
@@ -35,7 +35,7 @@ export default function Login() {
   return (
     <div className="login-container">
       <div className="login-box">
-        <h1>Sign In</h1>
+        <h1>Вход в аккаунт</h1>
         {error && <p className="error">{error}</p>} {/* ✅ Показываем ошибку */}
         <input
           type="email"
@@ -49,8 +49,13 @@ export default function Login() {
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
-        <button onClick={handleLogin}>Sign In</button>
+        <button onClick={handleLogin}>Вход</button>
+        {/* Ссылка на регистрацию */}
+        <div className="register-link">
+          Нет аккаунта? <Link to="/register">Зарегистрироваться</Link>
+        </div>
       </div>
+
     </div>
   );
 }

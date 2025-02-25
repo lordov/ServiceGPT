@@ -32,7 +32,7 @@ export default function ChatSidebar({ chats, selectedChat, onSelectChat, onNewCh
 
             {/* 📌 Нижняя часть (лого + кнопка выхода) */}
             <div className="sidebar-footer">
-                <button className="logout-btn" onClick={handleLogout}>Logout</button>
+                <button className="logout-btn" onClick={handleLogout}>Выход</button>
             </div>
         </div>
     );
