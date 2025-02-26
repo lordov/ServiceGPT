@@ -34,7 +34,6 @@ def upgrade() -> None:
     sa.Column('chat_id', sa.Integer(), nullable=False),
     sa.Column('sender_id', sa.Integer(), nullable=False),
     sa.Column('content', sa.String(length=1000), nullable=False),
-    sa.Column('timestamp', sa.DateTime(), nullable=False),
     sa.Column('created', sa.DateTime(), nullable=True),
     sa.Column('updated', sa.DateTime(), nullable=True),
     sa.ForeignKeyConstraint(['chat_id'], ['chats.id'], ),

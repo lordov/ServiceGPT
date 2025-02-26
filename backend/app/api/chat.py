@@ -114,7 +114,7 @@ async def create_chat_and_send_message(
     saved_bot_message = await create_message(
         db,
         bot_message,
-        sender_id=0,
+        sender_id=1,
         role="assistant"
     )
 
@@ -145,7 +145,7 @@ async def send_message_to_existing_chat(
 
     # Сохраняем ответ от нейросети
     bot_message = MessageCreate(chat_id=chat_id, content=gpt_response)
-    saved_bot_message = await create_message(db, bot_message, sender_id=0, role="assistant")
+    saved_bot_message = await create_message(db, bot_message, sender_id=1, role="assistant")
 
     return saved_bot_message
 
