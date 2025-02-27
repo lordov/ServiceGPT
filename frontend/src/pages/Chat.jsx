@@ -6,7 +6,7 @@ import { atomDark } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { motion } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
+import apiClient from "../interceptor/axiosInstance";
 import "../styles/chat.scss";
 
 export default function Chat() {
@@ -56,7 +56,7 @@ export default function Chat() {
                     return;
                 }
 
-                const response = await axios.get("http://localhost:8000/chats", {
+                const response = await apiClient.get("http://localhost:8000/chats", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
@@ -73,7 +73,7 @@ export default function Chat() {
     // 📌 Загружаем сообщения чата
     const fetchMessages = async (chatId) => {
         try {
-            const response = await axios.get(`http://localhost:8000/chats/${chatId}/messages`, {
+            const response = await apiClient.get(`http://localhost:8000/chats/${chatId}/messages`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -96,7 +96,7 @@ export default function Chat() {
             let response;
             if (selectedChat) {
                 // ✅ Отправляем сообщение в существующий чат
-                response = await axios.post(
+                response = await apiClient.post(
                     `http://localhost:8000/chats/${selectedChat}/messages`,
                     { content: input },
                     { headers: { Authorization: `Bearer ${token}` } }
@@ -104,7 +104,7 @@ export default function Chat() {
                 setMessages([...messages, response.data]);
             } else {
                 // ✅ Создаём новый чат и отправляем первое сообщение
-                response = await axios.post(
+                response = await apiClient.post(
                     "http://localhost:8000/chats/messages",
                     { content: input },
                     { headers: { Authorization: `Bearer ${token}` } }
@@ -112,7 +112,7 @@ export default function Chat() {
 
                 const fetchChats = async () => {
                     try {
-                        const response = await axios.get("http://localhost:8000/chats", {
+                        const response = await apiClient.get("http://localhost:8000/chats", {
                             headers: { Authorization: `Bearer ${token}` },
                         });
 

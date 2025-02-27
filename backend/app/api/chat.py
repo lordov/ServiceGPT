@@ -2,7 +2,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from app.database import get_db
-from app.auth import get_current_user
+from backend.app.core.security.auth import get_current_user
 from app.services.chat import create_chat, get_chats_by_user, create_message, get_messages_by_chat
 from app.repositories.chat import ChatRepository
 from app.schemas.chat import (

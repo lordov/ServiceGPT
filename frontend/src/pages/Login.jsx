@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import axios from "axios";
+import apiClient from "../interceptor/axiosInstance";
 import "../styles/login.scss";
 
 export default function Login() {
@@ -18,7 +18,7 @@ export default function Login() {
     formData.append("grant_type", "password");
 
     try {
-      const response = await axios.post("http://127.0.0.1:8000/auth/login", formData, {
+      const response = await apiClient.post("http://127.0.0.1:8000/auth/login", formData, {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded", // ✅ Правильный заголовок
         },

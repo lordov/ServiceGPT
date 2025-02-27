@@ -4,24 +4,24 @@ from fastapi.exceptions import HTTPException
 from app.models.chat import Message
 
 from app.config import env
-from app.services.chat import get_messages_by_chat
 
 
 client = openai.OpenAI(
     api_key=env.str("GPT_API_KEY"),
     base_url=env.str("GPT_URL"),
-    )
+)
+
 
 async def generate_chatgpt_response(
         message: str | None = None,
         chat_messages: list[Message] | None = None,
         model: str = "qwen-plus"
-        ) -> str:
+) -> str:
     try:
         if chat_messages is None:
             messages = [
                 {"role": "user", "content": message}
-                ]
+            ]
         else:
             # Формируем историю для OpenAI API
             messages = [
@@ -29,7 +29,7 @@ async def generate_chatgpt_response(
                 for message in chat_messages
             ]
             messages.append({"role": "user", "content": message})
-        
+
         # Отправляем историю в OpenAI API
         response = client.chat.completions.create(
             model=model,

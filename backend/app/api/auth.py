@@ -4,8 +4,9 @@ from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.exceptions import ResponseValidationError
 
 from app.database import get_db
-from app.services.user import get_user_by_email, create_user, verify_password
-from app.auth import create_access_token, get_current_user
+from app.services.user import get_user_by_email, create_user
+from app.core.security.pwdcrypt import verify_password
+from backend.app.core.security.auth import create_access_token, create_refresh_token, get_current_user
 from app.schemas.user import UserCreate, UserOut
 from app.core.exceptions.schemas import ErrorResponseModel
 from app.core.exceptions.exceptions import UserAlreadyExists
@@ -43,6 +44,14 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
         }
 
 
+@router.post("/refresh", response_model=dict)
+async def refresh_access_token(
+    refresh_token: str,
+    session: AsyncSession = Depends(get_db)
+):
+    return await refresh_token(refresh_token, session)
+
+
 @router.post("/login")
 async def login(
     form_data: OAuth2PasswordRequestForm = Depends(),
@@ -53,19 +62,26 @@ async def login(
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     access_token = create_access_token({"sub": user.email})
-    return {"access_token": access_token, "token_type": "bearer"}
+    refresh_token = create_refresh_token(
+        data={"sub": user.email},
+    )
+    return {
+        "access_token": access_token, 
+        "refresh_token": refresh_token,
+        "token_type": "bearer"
+        }
 
 
 @router.get("/users/me", response_model=UserOut)
 async def read_users_me(
     current_user: str = Depends(get_current_user),
     db: AsyncSession = Depends(get_db)
-    ):
+):
     # Получаем пользователя по email (email == current_user)
     # Здесь предполагается, что мы имеем функцию для поиска пользователя по email
     user = await get_user_by_email(db, current_user)
-    
+
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
-    
+
     return user.to_read_model()
