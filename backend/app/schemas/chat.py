@@ -8,7 +8,7 @@ class ChatBase(BaseModel):
 
 
 class ChatCreate(ChatBase):
-    pass
+    owner_id: int
 
 
 class ChatOut(ChatBase):

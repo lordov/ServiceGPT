@@ -159,7 +159,7 @@ export default function Chat() {
                                 {messages.map((msg, index) => (
                                     <motion.div
                                         key={index}
-                                        className={`chat-message ${msg.sender_id === 0 ? "bot" : "user"}`}
+                                        className={`chat-message ${msg.sender_id === 1 ? "bot" : "user"}`}
                                         initial="hidden"
                                         animate="visible"
                                         variants={messageVariants}

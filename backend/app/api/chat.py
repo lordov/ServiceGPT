@@ -5,11 +5,16 @@ from app.database import get_db
 from app.auth import get_current_user
 from app.services.chat import create_chat, get_chats_by_user, create_message, get_messages_by_chat
 from app.repositories.chat import ChatRepository
-from app.schemas.chat import ChatCreate, ChatOut, MessageBase, MessageCreate, MessageOut
+from app.schemas.chat import (
+    ChatCreate, ChatOut, ChatBase,
+    MessageBase, MessageCreate,
+    MessageOut
+)
 from app.schemas.user import UserOut
 from app.services.chat import Chat
 from app.services.openai import generate_chatgpt_response
 from app.services.my_logging import logger
+from app.utils.text import get_title
 
 
 router = APIRouter(prefix="/chats", tags=["Chats"])
@@ -17,12 +22,12 @@ router = APIRouter(prefix="/chats", tags=["Chats"])
 
 @router.post("/", response_model=ChatOut)
 async def create_new_chat(
-    chat_data: ChatCreate,
+    chat_data: ChatBase,
     current_user: Annotated[UserOut, Depends(get_current_user)],
     db: AsyncSession = Depends(get_db),
 ):
     chat_repo = ChatRepository(db)
-    chat = await chat_repo.add_one({"title": chat_data.title, "owner_id": current_user.id})
+    chat = await chat_repo.add_one(chat_data.model_dump())
 
     if not chat:
         logger.error(f"Failed to create chat for user {current_user.id}")
@@ -95,15 +100,12 @@ async def create_chat_and_send_message(
     # Получаем ответ от нейросети
     gpt_response = await generate_chatgpt_response(
         message=message_data.content)
-
-    sentences = gpt_response.split('. ')
-    title = sentences[0]
+    chat_repo = ChatRepository(db)
+    title = get_title(gpt_response)
 
     # Создаем новый чат с названием, полученным от нейросети
-    chat = Chat(title=title, owner_id=current_user.id)
-    db.add(chat)
-    await db.commit()
-    await db.refresh(chat)
+    chat = ChatCreate(title=title, owner_id=current_user.id).model_dump()
+    chat = await chat_repo.add_one(chat)
 
     # Сохраняем сообщение от пользователя
     user_message = MessageCreate(chat_id=chat.id, content=message_data.content)
