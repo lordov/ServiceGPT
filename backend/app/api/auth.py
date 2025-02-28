@@ -8,6 +8,7 @@ from app.services.user import get_user_by_email, create_user
 from app.core.security.pwdcrypt import verify_password
 from backend.app.core.security.auth import create_access_token, create_refresh_token, get_current_user
 from app.schemas.user import UserCreate, UserOut
+from app.schemas.token import TokenResponse, TokenRefresh
 from app.core.exceptions.schemas import ErrorResponseModel
 from app.core.exceptions.exceptions import UserAlreadyExists
 from app.core.exceptions.schemas import ErrorResponseModel
@@ -61,8 +62,8 @@ async def login(
     if not user or not await verify_password(form_data.password, user.hashed_password):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    access_token = create_access_token({"sub": user.email})
-    refresh_token = create_refresh_token(
+    access_token = await create_access_token({"sub": user.email})
+    refresh_token = await create_refresh_token(
         data={"sub": user.email},
     )
     return {

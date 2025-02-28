@@ -22,6 +22,7 @@ export default function Login() {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded", // ✅ Правильный заголовок
         },
+        withCredentials: true,
       });
 
       localStorage.setItem("token", response.data.access_token);

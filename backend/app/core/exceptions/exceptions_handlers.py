@@ -4,6 +4,7 @@ from fastapi.exceptions import ResponseValidationError
 from fastapi.responses import JSONResponse
 from app.core.exceptions.schemas import ErrorResponseModel
 from app.core.exceptions.exceptions import CustomHTTPException
+from app.services.my_logging import logger
 
 
 async def custom_http_exception_handler(request: Request, exc: CustomHTTPException):
@@ -24,7 +25,7 @@ async def validation_exception_handler(request: Request, exc: ResponseValidation
         msg = error["msg"]
         errors.append({"field": field, "msg": msg,
                       "your_input": error["input"]})
-    print(errors)  # тут например логируем
+    logger.error(errors)  # тут например логируем
     return JSONResponse(status_code=422, content=errors)
 
 
