@@ -63,7 +63,7 @@ class SQLAlchemyRepository(AbstractRepository):
         except IntegrityError as e:
             logger.error(f"IntegrityError in {self.model.__name__}: {str(e)}")
             raise
-        except Exception as e:
+        except DBAPIError as e:
             logger.error(
                 f"Unexpected error in {self.model.__name__}: {str(e)}")
             raise
@@ -87,12 +87,12 @@ class SQLAlchemyRepository(AbstractRepository):
             query = select(self.model).where(self.model.owner_id == owner_id)
         try:
             result = await self.session.execute(query)
-        except NoResultFound:
-            raise NoRowsFoundError(
-                f'For model {self.model.__name__} not found')
+            rows = result.scalars().all()  # Получаем список результатов
+            if not rows:  # Если список пустой, выбрасываем исключение
+                raise NoRowsFoundError(f'For model {self.model.__name__} not found')
+            return rows
         except DBAPIError as e:
             raise DBError(str(e))
-        return result.scalars().all()
 
     async def edit_one(self, id: int, data: dict):
         if not data:
