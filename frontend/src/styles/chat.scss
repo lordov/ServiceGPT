@@ -41,18 +41,39 @@
         list-style: none;
         padding: 0;
         margin: 0;
-
+    
         li {
+            position: relative;
             padding: 10px;
             background: #333;
             margin-bottom: 5px;
             cursor: pointer;
             border-radius: 5px;
             transition: background 0.3s;
-
+    
             &:hover,
             &.active-chat {
                 background: #444;
+            }
+    
+            .delete-chat {
+                position: absolute;
+                right: 10px;
+                top: 50%;
+                transform: translateY(-50%);
+                color: #ff3b30;
+                font-weight: bold;
+                cursor: pointer;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+    
+                &:hover {
+                    color: #d32f2f;
+                }
+            }
+    
+            &:hover .delete-chat {
+                opacity: 1;
             }
         }
     }

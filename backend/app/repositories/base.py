@@ -106,5 +106,8 @@ class SQLAlchemyRepository(AbstractRepository):
 
     async def delete_one(self, id: int):
         stmt = delete(self.model).where(self.model.id == id)
-        result = await self.session.execute(stmt)
+        try:
+            result = await self.session.execute(stmt)
+        except DBAPIError as e:
+            raise DBError(str(e))
         return result.rowcount > 0

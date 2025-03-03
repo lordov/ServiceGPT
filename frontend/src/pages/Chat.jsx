@@ -85,59 +85,80 @@ export default function Chat() {
         }
     };
 
+    const handleDeleteChat = async (chatId) => {
+        try {
+            await apiClient.delete(`http://localhost:8000/chats/${chatId}`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            // Обновляем список чатов, исключая удалённый
+            setChats(prevChats => prevChats.filter(chat => chat.id !== chatId));
+
+            // Если удалённый чат был выбран, сбрасываем его
+            if (selectedChat === chatId) {
+                setSelectedChat(null);
+                setMessages([]);
+            }
+        } catch (error) {
+            console.error("Ошибка при удалении чата", error);
+        }
+    };
+
     // 📌 Отправка сообщения
     const sendMessage = async () => {
         if (!input.trim()) return;
 
-        setIsLoading(true); // ✅ Показываем индикатор загрузки
+        // Сохраняем текст сообщения пользователя
+        const userMessage = {
+            content: input,
+        };
+
+        // Добавляем сообщение пользователя в список сразу (оптимистичное обновление)
+        setMessages(prevMessages => [...prevMessages, userMessage]);
+
+        setIsLoading(true);
+        const messageContent = input;
         setInput("");
 
         try {
             let response;
             if (selectedChat) {
-                // ✅ Отправляем сообщение в существующий чат
+                // Отправляем сообщение в существующий чат
                 response = await apiClient.post(
                     `http://localhost:8000/chats/${selectedChat}/messages`,
-                    { content: input },
+                    { content: messageContent },
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
-                setMessages([...messages, response.data]);
+                // Добавляем ответ бота к списку сообщений
+                setMessages(prevMessages => [...prevMessages, response.data]);
             } else {
-                // ✅ Создаём новый чат и отправляем первое сообщение
+                // Создаём новый чат и отправляем первое сообщение
                 response = await apiClient.post(
                     "http://localhost:8000/chats/messages",
-                    { content: input },
+                    { content: messageContent },
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
 
-                const fetchChats = async () => {
-                    try {
-                        const response = await apiClient.get("http://localhost:8000/chats", {
-                            headers: { Authorization: `Bearer ${token}` },
-                        });
-
-                        setChats(response.data);
-                    } catch (error) {
-                        console.error("Ошибка при загрузке чатов:", error);
-                    }
-                };
-
-
-                // ✅ Обновляем список чатов и выбираем новый чат
-
-                fetchChats();
-                fetchMessages(response.data.chat_id);
                 setSelectedChat(response.data.chat_id);
-            }
 
-            setInput("");
-            setError(""); // ✅ Убираем ошибку, если отправлено успешно
+                // Обновляем список чатов (если необходимо)
+                const chatsResponse = await apiClient.get("http://localhost:8000/chats", {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setChats(chatsResponse.data);
+
+                // Получаем сообщения нового чата и обновляем state
+                const messagesResponse = await apiClient.get(`http://localhost:8000/chats/${response.data.chat_id}/messages`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+                setMessages(messagesResponse.data);
+            }
+            setError("");
         } catch (error) {
             console.error("Ошибка при отправке сообщения:", error);
-            setError("Не удалось отправить сообщение."); // ✅ Показываем ошибку
-        }
-        finally {
-            setIsLoading(false); // ✅ Скрываем индикатор загрузки
+            setError("Не удалось отправить сообщение.");
+            // При ошибке можно, например, удалить оптимистично добавленное сообщение или пометить его как неотправленное
+        } finally {
+            setIsLoading(false);
         }
     };
 
@@ -150,6 +171,7 @@ export default function Chat() {
                     selectedChat={selectedChat}
                     onSelectChat={fetchMessages}
                     onNewChat={() => setSelectedChat(null)}
+                    onDeleteChat={handleDeleteChat}
                 />
                 {/* 📌 Основное окно чата */}
                 <div className="chat-main">

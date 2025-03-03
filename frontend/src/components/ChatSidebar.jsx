@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 
-export default function ChatSidebar({ chats, selectedChat, onSelectChat, onNewChat }) {
+export default function ChatSidebar({ chats, selectedChat, onSelectChat, onNewChat, onDeleteChat }) {
     const navigate = useNavigate();
 
     const handleLogout = () => {
@@ -10,14 +10,12 @@ export default function ChatSidebar({ chats, selectedChat, onSelectChat, onNewCh
 
     return (
         <div className="chat-sidebar">
-            {/* 📌 Верхняя часть (лого + кнопка нового чата) */}
             <div className="sidebar-header">
                 <img src="/logo.png" alt="Logo" className="logo" />
                 <h1>ServiceGPT</h1>
             </div>
             <button className="new-chat-btn" onClick={onNewChat}>Новый чат</button>
 
-            {/* 📌 Список чатов */}
             <h2>Чаты</h2>
             <ul>
                 {chats.map((chat) => (
@@ -26,11 +24,19 @@ export default function ChatSidebar({ chats, selectedChat, onSelectChat, onNewCh
                         onClick={() => onSelectChat(chat.id)}
                     >
                         {chat.title}
+                        <span 
+                          className="delete-chat"
+                          onClick={(e) => {
+                              e.stopPropagation();
+                              onDeleteChat(chat.id);
+                          }}
+                        >
+                          ✖
+                        </span>
                     </li>
                 ))}
             </ul>
 
-            {/* 📌 Нижняя часть (лого + кнопка выхода) */}
             <div className="sidebar-footer">
                 <button className="logout-btn" onClick={handleLogout}>Выход</button>
             </div>

@@ -29,7 +29,7 @@ class Message(Base):
     id: Mapped[int] = mapped_column(
         Integer, primary_key=True, autoincrement=True)
     chat_id: Mapped[int] = mapped_column(
-        ForeignKey("chats.id"), nullable=False)
+        ForeignKey("chats.id", ondelete='CASCADE'), nullable=False)
     sender_id: Mapped[int] = mapped_column(
         ForeignKey("users.id"), nullable=True)
     content: Mapped[str] = mapped_column(Text, default=0)
