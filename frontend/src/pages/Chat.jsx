@@ -198,6 +198,7 @@ export default function Chat() {
                                                                 onClick={() => handleCopy(codeText)}
                                                                 style={{
                                                                     position: "absolute",
+                                                                    width: "15%",
                                                                     right: "10px",
                                                                     top: "10px",
                                                                     background: copied ? "green" : "rgba(255,255,255,0.2)",
@@ -218,6 +219,7 @@ export default function Chat() {
                                                                 PreTag="div"
                                                                 {...props}
                                                             >
+                                                                
                                                                 {codeText}
                                                             </SyntaxHighlighter>
                                                         </div>
