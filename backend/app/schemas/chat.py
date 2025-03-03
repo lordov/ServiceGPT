@@ -19,15 +19,11 @@ class ChatOut(ChatBase):
         from_attributes = True
 
 
-class MessageBase(BaseModel):
+class MessageSchema(BaseModel):
     content: str
 
 
-class MessageCreate(MessageBase):
-    chat_id: Union[int | None] = None
-
-
-class MessageOut(MessageBase):
+class MessageOut(MessageSchema):
     id: int
     chat_id: int
     sender_id: int
