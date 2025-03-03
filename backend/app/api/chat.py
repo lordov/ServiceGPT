@@ -25,16 +25,6 @@ async def get_chat_service(uow: IUnitOfWork = Depends(UnitOfWork)) -> ChatServic
     return ChatService(uow)
 
 
-@router.post("/", response_model=ChatOut)
-async def create_new_chat(
-    chat_data: ChatBase,
-    current_user: Annotated[UserOut, Depends(get_current_user)],
-    chat_service: ChatService = Depends(get_chat_service)
-):
-    data = ChatCreate(**chat_data.model_dump(), owner_id=current_user.id)
-    return await chat_service.create_chat(data)
-
-
 @router.get("/", response_model=list[ChatOut])
 async def get_user_chats(
     current_user: Annotated[UserOut, Depends(get_current_user)],
@@ -43,45 +33,13 @@ async def get_user_chats(
     return await chat_service.get_chats_by_user(current_user.id)
 
 
-# @router.get("/{chat_id}", response_model=ChatOut)
-# async def get_chat_by_id(
-#     chat_id: int,
-#     current_user: Annotated[UserOut, Depends(get_current_user)],
-#     chat_service: ChatService = Depends(get_chat_service)
-# ):
-#     chat_repo = ChatRepository(db)
-#     chat = await chat_repo.get_one(chat_id)
-
-#     if not chat or chat.owner_id != current_user.id:
-#         logger.warning(
-#             f"User {current_user.id} tried to access non-existing chat {chat_id}")
-#         raise HTTPException(status_code=404, detail="Chat not found")
-
-#     return chat
-
-
-# @router.delete("/{chat_id}")
-# async def delete_chat(
-#     chat_id: int,
-#     current_user: Annotated[UserOut, Depends(get_current_user)],
-#     db: AsyncSession = Depends(get_db),
-# ):
-#     chat_repo = ChatRepository(db)
-#     chat = await chat_repo.get_one(chat_id)
-
-#     if not chat or chat.owner_id != current_user.id:
-#         logger.warning(
-#             f"User {current_user.id} tried to delete non-existing chat {chat_id}")
-#         raise HTTPException(status_code=404, detail="Chat not found")
-
-#     deleted = await chat_repo.delete_one(chat_id)
-
-#     if not deleted:
-#         logger.error(f"Failed to delete chat {chat_id}")
-#         raise HTTPException(status_code=500, detail="Failed to delete chat")
-
-#     logger.info(f"User {current_user.id} deleted chat {chat_id}")
-#     return {"message": "Chat deleted successfully"}
+@router.delete("/{chat_id}")
+async def delete_chat(
+    chat_id: int,
+    current_user: Annotated[UserOut, Depends(get_current_user)],
+    chat_service: ChatService = Depends(get_chat_service)
+):
+    return await chat_service.delete_chat(chat_id, current_user)
 
 
 @router.post("/messages", response_model=MessageOut)
@@ -92,6 +50,7 @@ async def send_first_message(
 ):
     return await chat_service.create_chat_and_send_message(
         message_data, current_user)
+
 
 @router.post("/{chat_id}/messages", response_model=MessageOut)
 async def send_message_to_existing_chat(

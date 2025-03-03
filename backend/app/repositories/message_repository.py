@@ -1,4 +1,4 @@
-from sqlalchemy import select, desc
+from sqlalchemy import select, desc, asc
 from app.repositories.base import SQLAlchemyRepository
 from app.models.chat import Message
 
@@ -10,7 +10,7 @@ class MessageRepository(SQLAlchemyRepository):
         stmt = (
             select(self.model)
             .filter(self.model.chat_id == chat_id)
-            .order_by(desc(self.model.id))
+            .order_by(asc(self.model.id))
             .limit(limit)
         )
         result = await self.session.execute(stmt)

@@ -56,13 +56,6 @@ class ChatService:
                 f"Message {msg.id} created in chat {msg.chat_id} by user {sender_id}")
             return MessageOut.model_validate(msg)
 
-    # async def get_messages_by_chat(db: AsyncSession, chat_id: int, limit: int = 20) -> list[Message]:
-    #     result = await db.execute(
-    #         select(Message).filter(Message.chat_id == chat_id).order_by(
-    #             desc(Message.chat_id)).limit(limit)
-    #     )
-    #     return result.scalars().all()
-
     async def create_chat_and_send_message(
         self,
         message_data: MessageSchema,
@@ -164,3 +157,25 @@ class ChatService:
 
             # Преобразуем ORM объекты в Pydantic схему
             return [MessageOut.model_validate(message) for message in messages]
+
+    async def delete_chat(self, chat_id: int, current_user: UserOut) -> dict:
+        async with self.uow:
+            # Получаем чат по идентификатору
+            chat = await self.uow.chat.get_one(chat_id)
+            if not chat or chat.owner_id != current_user.id:
+                logger.warning(
+                    f"User {current_user.id} tried to delete non-existing chat {chat_id}"
+                )
+                raise HTTPException(status_code=404, detail="Chat not found")
+
+            # Удаляем чат
+            deleted = await self.uow.chat.delete_one(chat_id)
+            if not deleted:
+                logger.error(f"Failed to delete chat {chat_id}")
+                raise HTTPException(
+                    status_code=500, detail="Failed to delete chat")
+
+            await self.uow.commit()
+            logger.info(f"User {current_user.id} deleted chat {chat_id}")
+
+        return {"message": "Chat deleted successfully"}
