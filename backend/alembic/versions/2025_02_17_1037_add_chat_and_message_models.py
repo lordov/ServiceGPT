@@ -36,7 +36,7 @@ def upgrade() -> None:
     sa.Column('content', sa.String(length=1000), nullable=False),
     sa.Column('created', sa.DateTime(), nullable=True),
     sa.Column('updated', sa.DateTime(), nullable=True),
-    sa.ForeignKeyConstraint(['chat_id'], ['chats.id'], ),
+    sa.ForeignKeyConstraint(['chat_id'], ['chats.id'], ondelete='CASCADE'),
     sa.ForeignKeyConstraint(['sender_id'], ['users.id'], ),
     sa.PrimaryKeyConstraint('id')
     )

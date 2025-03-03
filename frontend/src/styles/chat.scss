@@ -8,7 +8,7 @@
 }
 
 .chat-sidebar {
-    width: 250px; // ✅ Фиксированная ширина сайдбара
+    width: 20%; // ✅ Фиксированная ширина сайдбара
     height: 100vh; // ✅ Полная высота экрана
     display: flex;
     flex-direction: column;
@@ -41,7 +41,7 @@
         list-style: none;
         padding: 0;
         margin: 0;
-    
+
         li {
             position: relative;
             padding: 10px;
@@ -50,12 +50,12 @@
             cursor: pointer;
             border-radius: 5px;
             transition: background 0.3s;
-    
+
             &:hover,
             &.active-chat {
                 background: #444;
             }
-    
+
             .delete-chat {
                 position: absolute;
                 right: 10px;
@@ -66,12 +66,12 @@
                 cursor: pointer;
                 opacity: 0;
                 transition: opacity 0.3s ease;
-    
+
                 &:hover {
                     color: #d32f2f;
                 }
             }
-    
+
             &:hover .delete-chat {
                 opacity: 1;
             }
@@ -127,7 +127,12 @@
 }
 
 .chat-main {
-    flex: 1;
+    max-width: 85%;
+    /* или любая другая ширина, которая вам нужна */
+    width: 100%;
+    /* чтобы сжимался на мобильных */
+    margin: 0 auto;
+    /* центрируем */
     display: flex;
     flex-direction: column;
     padding: 20px;
@@ -142,20 +147,47 @@
 
 .chat-messages {
     flex: 1;
+    max-width: 100%;
     overflow-y: auto;
     display: flex;
     flex-direction: column;
 }
 
 .chat-message {
+    display: inline-block;
+    max-width: 80%;
     padding: 10px;
     border-radius: 5px;
     margin-bottom: 5px;
+    word-wrap: break-word;
+    /* старый вариант */
+    overflow-wrap: anywhere;
+    /* современный вариант */
+    word-break: break-word;
+    /* дополнительная гарантия переноса */
+}
+
+.chat-message pre,
+.chat-message code {
+    padding: 10px;
+    max-width: 80%;
+    white-space: pre-wrap;
+    /* перенос по строкам, но сохраняя форматирование */
+    word-wrap: break-word;
+    overflow-wrap: anywhere;
+    word-break: break-word;
+    
+
+    /* При желании можно добавить горизонтальный скролл, если хотите сохранить исходные отступы:
+     overflow-x: auto;
+  */
 }
 
 .user {
+    align-self: flex-end;    /* Выравниваем по правому краю в потоке flex */
+    margin-left: auto;       /* Сдвигаем сообщение вправо (отталкивая от левого края) */
+    margin-right: 20px;      /* Дополнительный отступ от правой границы, чтобы не было вплотную */
     background: #007bff;
-    align-self: flex-end;
 }
 
 .bot {
