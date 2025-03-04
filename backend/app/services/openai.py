@@ -3,7 +3,7 @@ import openai
 from fastapi.exceptions import HTTPException
 from app.models.chat import Message
 
-from app.config import env
+from app.core.config.config import env
 
 
 client = openai.OpenAI(

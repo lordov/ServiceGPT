@@ -5,13 +5,24 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.auth import router as auth_router
 from app.api.chat import router as chat_router
 from app.core.exceptions.exceptions_handlers import validation_exception_handler
+from app.core.config.settings import settings
+from app.api.middleware.middleware import  additional_processing, logging_middleware
 
 
-app = FastAPI(openapi_url="/openapi.json")
+app = FastAPI(
+    title=settings.TITLE,
+    description=settings.DESCRIPTION,
+    version=settings.VERSION,
+    docs_url=settings.DOCS_URL,
+    redoc_url=settings.REDOCS_URL,
+    openapi_url="/openapi.json")
 app.include_router(auth_router)
 app.include_router(chat_router)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
 # Разрешаем CORS для фронтенда
+
+app.middleware("http")(logging_middleware)
+app.middleware("http")(additional_processing)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["http://localhost:3000"],  # 🔥 Разрешаем запросы с фронта

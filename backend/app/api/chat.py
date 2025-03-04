@@ -1,20 +1,16 @@
 from typing import Annotated
-from fastapi import APIRouter, Depends, HTTPException
-from sqlalchemy.ext.asyncio import AsyncSession
-from app.database import get_db
+from fastapi import APIRouter, Depends
 from backend.app.core.security.auth import get_current_user
-# from app.services.chat import create_chat, get_chats_by_user, create_message, get_messages_by_chat
 from app.services.chat_services import ChatService
 from app.utils.unit_of_work import IUnitOfWork, UnitOfWork
-from backend.app.repositories.chat_repository import ChatRepository
 from app.schemas.chat import (
-    ChatCreate, ChatOut, ChatBase,
+    ChatOut, 
     MessageSchema,
     MessageOut
 )
 from app.schemas.user import UserOut
 from app.services.openai import generate_chatgpt_response
-from app.services.my_logging import logger
+from backend.app.core.my_logging import logger
 from app.utils.text import get_title
 
 

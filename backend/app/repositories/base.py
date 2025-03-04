@@ -7,8 +7,8 @@ from sqlalchemy.exc import (
     IntegrityError, NoResultFound, 
     MultipleResultsFound, DBAPIError
     )
-from app.services.my_logging import logger
-from backend.app.core.exceptions.exceptions import NoRowsFoundError, DBError
+from app.core.my_logging import logger
+from app.core.exceptions.exceptions import NoRowsFoundError, DBError
 
 
 class AbstractRepository(ABC):

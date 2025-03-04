@@ -1,11 +1,8 @@
 from fastapi import HTTPException
-from sqlalchemy import desc
-from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.future import select
-from app.models.chat import Chat, Message
+from app.models.chat import Chat
 from app.schemas.chat import ChatOut, MessageSchema, MessageOut, ChatCreate
 from app.utils.unit_of_work import IUnitOfWork
-from app.services.my_logging import logger
+from app.core.my_logging import logger
 from app.schemas.user import UserOut
 from app.services.openai import generate_chatgpt_response
 from app.utils.text import get_title

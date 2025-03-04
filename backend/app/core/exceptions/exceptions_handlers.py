@@ -4,7 +4,7 @@ from fastapi.exceptions import ResponseValidationError
 from fastapi.responses import JSONResponse
 from app.core.exceptions.schemas import ErrorResponseModel
 from app.core.exceptions.exceptions import CustomHTTPException
-from app.services.my_logging import logger
+from app.core.my_logging import logger
 
 
 async def custom_http_exception_handler(request: Request, exc: CustomHTTPException):
