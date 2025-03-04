@@ -2,38 +2,46 @@ import axios from "axios";
 
 const apiClient = axios.create({
   baseURL: "http://127.0.0.1:8000",
+  withCredentials: true, // ✅ Позволяет передавать refresh_token из куков
 });
 
 let isRefreshing = false;
 let failedRequestsQueue = [];
+
+apiClient.interceptors.request.use(
+  async (config) => {
+    const token = localStorage.getItem("token");
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
 apiClient.interceptors.response.use(
   (response) => response,
   async (error) => {
     const originalRequest = error.config;
 
-    if (error.response.status === 401 && !originalRequest._retry) {
+    if (error.response?.status === 401 && !originalRequest._retry) {
       originalRequest._retry = true;
 
       try {
         if (!isRefreshing) {
           isRefreshing = true;
 
-          // Обновляем Access Token через Refresh Token
-          const response = await apiClient.post("/auth/refresh", {
-            refresh_token: getRefreshTokenFromCookie(),
-          });
+          // ✅ Обновляем токен
+          const response = await apiClient.post("/auth/refresh");
 
           if (response.data.access_token) {
-            setAccessTokenInStorage(response.data.access_token);
-            apiClient.defaults.headers.common[
-              "Authorization"
-            ] = `Bearer ${response.data.access_token}`;
+            setAccessToken(response.data.access_token);
+            apiClient.defaults.headers.common["Authorization"] = `Bearer ${response.data.access_token}`;
           }
 
           isRefreshing = false;
 
-          // Повторяем все запросы из очереди
+          // ✅ Повторяем все запросы, которые ждали refresh
           failedRequestsQueue.forEach((req) => req.onSuccess());
           failedRequestsQueue = [];
         } else {
@@ -42,12 +50,12 @@ apiClient.interceptors.response.use(
           });
         }
 
-        return apiClient(originalRequest); // Повторяем оригинальный запрос
+        return apiClient(originalRequest); // ✅ Повторяем запрос с новым токеном
       } catch (refreshError) {
-        console.error("Failed to refresh token", refreshError);
+        console.error("Refresh token expired. Redirecting to login...", refreshError);
         isRefreshing = false;
 
-        // Очищаем токены и перенаправляем пользователя на страницу входа
+        // ❌ Если refresh не сработал — чистим всё и редиректим на логин
         clearTokens();
         window.location.href = "/login";
         return Promise.reject(refreshError);
@@ -58,18 +66,13 @@ apiClient.interceptors.response.use(
   }
 );
 
-function getRefreshTokenFromCookie() {
-  const cookies = document.cookie.split("; ").find((row) => row.startsWith("refresh_token="));
-  return cookies ? cookies.split("=")[1] : null;
-}
-
-function setAccessTokenInStorage(token) {
-  localStorage.setItem("access_token", token);
+function setAccessToken(token) {
+  localStorage.setItem("token", token);
 }
 
 function clearTokens() {
   document.cookie = "refresh_token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-  localStorage.removeItem("access_token");
+  localStorage.removeItem("token");
 }
 
 export default apiClient;

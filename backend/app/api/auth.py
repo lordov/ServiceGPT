@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.exceptions import ResponseValidationError
@@ -6,7 +6,7 @@ from fastapi.exceptions import ResponseValidationError
 from app.database import get_db
 from app.services.user import get_user_by_email, create_user
 from app.core.security.pwdcrypt import verify_password
-from backend.app.core.security.auth import create_access_token, create_refresh_token, get_current_user
+from backend.app.core.security.auth import create_access_token, create_refresh_token, get_current_user, refresh_jwt
 from app.schemas.user import UserCreate, UserOut
 from app.schemas.token import TokenResponse, TokenRefresh
 from app.core.exceptions.schemas import ErrorResponseModel
@@ -45,16 +45,9 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
         }
 
 
-@router.post("/refresh", response_model=dict)
-async def refresh_access_token(
-    refresh_token: str,
-    session: AsyncSession = Depends(get_db)
-):
-    return await refresh_token(refresh_token, session)
-
-
 @router.post("/login")
 async def login(
+    response: Response,
     form_data: OAuth2PasswordRequestForm = Depends(),
     db: AsyncSession = Depends(get_db)
 ):
@@ -66,11 +59,28 @@ async def login(
     refresh_token = await create_refresh_token(
         data={"sub": user.email},
     )
+    # ✅ Сохраняем refresh токен в HttpOnly Cookie
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=False,
+        samesite="Lax",
+        expires=60 * 60 * 24 * 7  # 7 days
+    )
     return {
-        "access_token": access_token, 
-        "refresh_token": refresh_token,
+        "access_token": access_token,
         "token_type": "bearer"
-        }
+    }
+
+
+@router.post("/refresh", response_model=dict)
+async def refresh_access_token(
+    request: Request,
+    session: AsyncSession = Depends(get_db)
+):
+    refresh_token = request.cookies.get("refresh_token")
+    return await refresh_jwt(refresh_token, session)
 
 
 @router.get("/users/me", response_model=UserOut)

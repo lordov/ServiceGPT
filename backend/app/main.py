@@ -25,7 +25,7 @@ app.middleware("http")(logging_middleware)
 app.middleware("http")(additional_processing)
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # 🔥 Разрешаем запросы с фронта
+    allow_origins=["http://127.0.0.1:3000"],  # 🔥 Разрешаем запросы с фронта
     allow_credentials=True,
     allow_methods=["*"],  # ✅ Разрешаем все методы (GET, POST, etc.)
     allow_headers=["*"],  # ✅ Разрешаем любые заголовки
