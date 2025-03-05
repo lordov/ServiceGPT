@@ -13,7 +13,7 @@ from app.core.exceptions.schemas import ErrorResponseModel
 from app.core.exceptions.exceptions import UserAlreadyExists
 from app.core.exceptions.schemas import ErrorResponseModel
 
-router = APIRouter(prefix="/auth", tags=["Auth"])
+router = APIRouter(prefix="/api/auth", tags=["Auth"])
 
 
 @router.post(

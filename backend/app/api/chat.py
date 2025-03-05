@@ -11,7 +11,7 @@ from app.schemas.chat import (
 from app.schemas.user import UserOut
 
 
-router = APIRouter(prefix="/chats", tags=["Chats"])
+router = APIRouter(prefix="/api/chats", tags=["Chats"])
 
 
 async def get_chat_service(uow: IUnitOfWork = Depends(UnitOfWork)) -> ChatService:

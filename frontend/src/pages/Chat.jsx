@@ -56,7 +56,7 @@ export default function Chat() {
                     return;
                 }
 
-                const response = await apiClient.get("http://localhost:8000/chats", {
+                const response = await apiClient.get("/chats", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
@@ -73,7 +73,7 @@ export default function Chat() {
     // 📌 Загружаем сообщения чата
     const fetchMessages = async (chatId) => {
         try {
-            const response = await apiClient.get(`http://localhost:8000/chats/${chatId}/messages`, {
+            const response = await apiClient.get(`/chats/${chatId}/messages`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -87,7 +87,7 @@ export default function Chat() {
 
     const handleDeleteChat = async (chatId) => {
         try {
-            await apiClient.delete(`http://localhost:8000/chats/${chatId}`, {
+            await apiClient.delete(`/chats/${chatId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             // Обновляем список чатов, исключая удалённый
@@ -133,7 +133,7 @@ export default function Chat() {
             } else {
                 // Создаём новый чат и отправляем первое сообщение
                 response = await apiClient.post(
-                    "http://localhost:8000/chats/messages",
+                    "/chats/messages",
                     { content: messageContent },
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
@@ -141,13 +141,13 @@ export default function Chat() {
                 setSelectedChat(response.data.chat_id);
 
                 // Обновляем список чатов (если необходимо)
-                const chatsResponse = await apiClient.get("http://localhost:8000/chats", {
+                const chatsResponse = await apiClient.get("/chats", {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setChats(chatsResponse.data);
 
                 // Получаем сообщения нового чата и обновляем state
-                const messagesResponse = await apiClient.get(`http://localhost:8000/chats/${response.data.chat_id}/messages`, {
+                const messagesResponse = await apiClient.get(`/chats/${response.data.chat_id}/messages`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
                 setMessages(messagesResponse.data);

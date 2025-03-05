@@ -18,7 +18,7 @@ export default function Login() {
     formData.append("grant_type", "password");
 
     try {
-      const response = await apiClient.post("http://127.0.0.1:8000/auth/login", formData, {
+      const response = await apiClient.post("/auth/login", formData, {
         headers: {
           "Content-Type": "application/x-www-form-urlencoded", // ✅ Правильный заголовок
         },
