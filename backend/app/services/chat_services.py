@@ -6,6 +6,7 @@ from app.core.my_logging import logger
 from app.schemas.user import UserOut
 from app.services.openai import generate_chatgpt_response
 from app.utils.text import get_title
+from app.core.exceptions.exceptions import NoRowsFoundError
 
 
 class ChatService:
@@ -27,6 +28,8 @@ class ChatService:
         async with self.uow:
             try:
                 chats = await self.uow.chat.get_all(owner_id=owner_id)
+            except NoRowsFoundError:
+                return []
             except Exception as e:
                 raise HTTPException(status_code=500, detail=str(e))
             logger.info(
