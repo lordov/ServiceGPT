@@ -8,7 +8,7 @@ from app.services.user import get_user_by_email, create_user
 from app.core.security.pwdcrypt import verify_password
 from backend.app.core.security.auth import create_access_token, create_refresh_token, get_current_user, refresh_jwt
 from app.schemas.user import UserCreate, UserOut
-from app.schemas.token import TokenResponse, TokenRefresh
+from app.schemas.token import TokenResponse
 from app.core.exceptions.schemas import ErrorResponseModel
 from app.core.exceptions.exceptions import UserAlreadyExists
 from app.core.exceptions.schemas import ErrorResponseModel

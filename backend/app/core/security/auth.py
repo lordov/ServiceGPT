@@ -75,7 +75,8 @@ async def refresh_jwt(
     session: AsyncSession = Depends(get_db)
 ):
     try:
-        payload: dict = jwt.decode(refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload: dict = jwt.decode(
+            refresh_token, SECRET_KEY, algorithms=[ALGORITHM])
         token_type = payload.get("type")
         if token_type != "refresh":
             raise HTTPException(
