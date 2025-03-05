@@ -1,17 +1,14 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
-from backend.app.core.security.auth import get_current_user
+from app.core.security.auth import get_current_user
 from app.services.chat_services import ChatService
 from app.utils.unit_of_work import IUnitOfWork, UnitOfWork
 from app.schemas.chat import (
-    ChatOut, 
+    ChatOut,
     MessageSchema,
     MessageOut
 )
 from app.schemas.user import UserOut
-from app.services.openai import generate_chatgpt_response
-from backend.app.core.my_logging import logger
-from app.utils.text import get_title
 
 
 router = APIRouter(prefix="/chats", tags=["Chats"])

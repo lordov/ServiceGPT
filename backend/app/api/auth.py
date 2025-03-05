@@ -6,7 +6,7 @@ from fastapi.exceptions import ResponseValidationError
 from app.database import get_db
 from app.services.user import get_user_by_email, create_user
 from app.core.security.pwdcrypt import verify_password
-from backend.app.core.security.auth import create_access_token, create_refresh_token, get_current_user, refresh_jwt
+from app.core.security.auth import create_access_token, create_refresh_token, get_current_user, refresh_jwt
 from app.schemas.user import UserCreate, UserOut
 from app.schemas.token import TokenResponse
 from app.core.exceptions.schemas import ErrorResponseModel
@@ -45,7 +45,16 @@ async def register(user_data: UserCreate, db: AsyncSession = Depends(get_db)):
         }
 
 
-@router.post("/login")
+@router.post(
+        "/login",
+        response_model=TokenResponse,
+        summary='Login',
+        description='The endpoint login user',
+        responses={
+            status.HTTP_200_OK: {"model": TokenResponse},
+            status.HTTP_401_UNAUTHORIZED: {"model": ErrorResponseModel},
+        }
+        )
 async def login(
     response: Response,
     form_data: OAuth2PasswordRequestForm = Depends(),
@@ -74,7 +83,7 @@ async def login(
     }
 
 
-@router.post("/refresh", response_model=dict)
+@router.post("/refresh", response_model=TokenResponse)
 async def refresh_access_token(
     request: Request,
     session: AsyncSession = Depends(get_db)

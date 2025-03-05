@@ -6,7 +6,7 @@ from datetime import datetime, timedelta, timezone
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.security import OAuth2PasswordBearer
-from backend.app.core.config.config import env
+from app.core.config.config import env
 from app.database import get_user, get_db
 
 SECRET_KEY = env.str("SECRET_KEY", "your_secret_key")
