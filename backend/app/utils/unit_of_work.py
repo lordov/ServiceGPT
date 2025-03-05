@@ -3,11 +3,14 @@ from abc import ABC, abstractmethod
 from app.database import async_session_maker
 from app.repositories.chat_repository import ChatRepository
 from app.repositories.message_repository import MessageRepository
+from app.repositories.user_repository import UserRepository
+
 
 class IUnitOfWork(ABC):
     chat: ChatRepository
     message: MessageRepository
-
+    user: UserRepository
+    
     @abstractmethod
     def __init__(self):
         ...
@@ -38,7 +41,8 @@ class UnitOfWork(IUnitOfWork):
 
         self.chat = ChatRepository(self.session)
         self.message = MessageRepository(self.session)
-        
+        self.user = UserRepository(self.session)
+
     async def __aexit__(self, *args):
         await self.rollback()
         await self.session.close()

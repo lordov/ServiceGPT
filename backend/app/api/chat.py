@@ -1,7 +1,7 @@
 from typing import Annotated
 from fastapi import APIRouter, Depends
 from app.core.security.auth import get_current_user
-from app.services.chat_services import ChatService
+from backend.app.services.chat_service import ChatService
 from app.utils.unit_of_work import IUnitOfWork, UnitOfWork
 from app.schemas.chat import (
     ChatOut,
