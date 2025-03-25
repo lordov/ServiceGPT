@@ -1,6 +1,4 @@
-from pydantic import BaseModel
-from datetime import datetime
-from typing import Union
+from pydantic import BaseModel, ConfigDict
 
 
 class ChatBase(BaseModel):
@@ -15,8 +13,9 @@ class ChatOut(ChatBase):
     id: int
     owner_id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(
+        from_attributes=True
+    )
 
 
 class MessageSchema(BaseModel):
@@ -28,5 +27,6 @@ class MessageOut(MessageSchema):
     chat_id: int
     sender_id: int
 
-    class Config:
-        from_attributes = True
+    model_config = ConfigDict(
+        from_attributes=True
+    )
