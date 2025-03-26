@@ -1,10 +1,10 @@
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 from sqlalchemy.orm import sessionmaker
-from app.core.config.config import DATABASE_URL
+from app.core.config.settings import settings
 from app.models.user import User
 
-engine = create_async_engine(DATABASE_URL, echo=True)
+engine = create_async_engine(settings.DATABASE_URL, echo=True)
 
 async_session_maker = sessionmaker(
     bind=engine,

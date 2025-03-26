@@ -3,12 +3,12 @@ import openai
 from fastapi.exceptions import HTTPException
 from app.models.chat import Message
 
-from app.core.config.config import env
+from app.core.config.settings import settings
 
 
 client = openai.OpenAI(
-    api_key=env.str("GPT_API_KEY"),
-    base_url=env.str("GPT_URL"),
+    api_key=settings.GPT_API_KEY,
+    base_url=settings.GPT_URL,
 )
 
 

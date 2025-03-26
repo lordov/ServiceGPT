@@ -6,10 +6,10 @@ from datetime import datetime, timedelta, timezone
 from fastapi import Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
 from fastapi.security import OAuth2PasswordBearer
-from app.core.config.config import env
+from app.core.config.settings import settings
 from app.database import get_user, get_db
 
-SECRET_KEY = env.str("SECRET_KEY", "your_secret_key")
+SECRET_KEY = settings.SECRET_KEY
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 REFRESH_TOKEN_EXPIRE_DAYS = 7
